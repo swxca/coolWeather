@@ -124,7 +124,7 @@ public class ChooseAreaActivity extends Activity {
         if (!TextUtils.isEmpty(code)) {
             address = "http://www.weather.com.cn/data/list3/city" + code + ".xml";
         } else {
-            address = "http://www.weather.com.cn/data/list/city.xml";
+            address = "http://www.weather.com.cn/data/list3/city.xml";
         }
         showProgressDialog();
         HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
@@ -152,6 +152,9 @@ public class ChooseAreaActivity extends Activity {
                             }
                         }
                     });
+                }
+                if (result){
+                    closeProgressDialog();
                 }
             }
 
