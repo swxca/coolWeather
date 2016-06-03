@@ -110,7 +110,7 @@ public class fastDevAlert {
         fastDevThread.RunOnMainThread(new Runnable() {
             @Override
             public void run() {
-                SVProgressHUD.showInfoWithStatus(context, msg);
+                //SVProgressHUD.showInfoWithStatus(context, msg);
             }
         });
     }
@@ -119,7 +119,7 @@ public class fastDevAlert {
         fastDevThread.RunOnMainThread(new Runnable() {
             @Override
             public void run() {
-                SVProgressHUD.dismiss(context);
+                //SVProgressHUD.dismiss(context);
             }
         });
     }

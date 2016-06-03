@@ -28,6 +28,9 @@ import java.util.List;
 /**
  * Created by yesgxy520 on 6/1/2016.
  */
+
+//这个Activity还有一种写法,就是直接继承ListActivity,对于这种纯列表的Activity,
+//ListActivity是很方便的,具体用法google一下.
 public class ChooseAreaActivityTest extends Activity {
     public static final int LEVEL_PROVINCE=0;
     public static final int LEVEL_CITY=1;
@@ -49,7 +52,7 @@ public class ChooseAreaActivityTest extends Activity {
     private Province selectedProvince;
     private City selectedCity;
     private int currentLevel;
-
+    //handler的使用要注意避免内存泄露.
     private Handler handler=new Handler(){
         public void handleMessage(Message msg){
             switch (msg.what){
