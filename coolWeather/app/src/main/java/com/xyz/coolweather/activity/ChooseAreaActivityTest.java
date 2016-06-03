@@ -1,8 +1,9 @@
 package com.xyz.coolweather.activity;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -27,10 +28,13 @@ import java.util.List;
 /**
  * Created by yesgxy520 on 6/1/2016.
  */
-public class ChooseAreaActivity extends Activity {
+public class ChooseAreaActivityTest extends Activity {
     public static final int LEVEL_PROVINCE=0;
     public static final int LEVEL_CITY=1;
     public static final int LEVEL_COUNTY=2;
+    public static final int MESSEAGE_PROVINCE=0;
+    public static final int MESSEAGE_CITY=1;
+    public static final int MESSEAGE_COUNTY=2;
 
     private ProgressDialog progressDialog;
     private TextView titleText;
@@ -45,6 +49,35 @@ public class ChooseAreaActivity extends Activity {
     private Province selectedProvince;
     private City selectedCity;
     private int currentLevel;
+
+    private Handler handler=new Handler(){
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case MESSEAGE_PROVINCE:
+                    adapter.notifyDataSetChanged();
+                    listView.setSelection(0);
+                    titleText.setText("中国—晓艺制造");
+                    currentLevel=LEVEL_PROVINCE;
+                    break;
+                case MESSEAGE_CITY:
+                    adapter.notifyDataSetChanged();
+                    listView.setSelection(0);
+                    titleText.setText(selectedProvince.getProvinceName()+"-晓艺制造");
+                    currentLevel=LEVEL_CITY;
+                    break;
+                case MESSEAGE_COUNTY:
+                    adapter.notifyDataSetChanged();
+                    listView.setSelection(0);
+                    titleText.setText(selectedCity.getCityName()+"-晓艺制造");
+                    currentLevel=LEVEL_COUNTY;
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+    };
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -71,53 +104,82 @@ public class ChooseAreaActivity extends Activity {
     }
 
     private void queryProvince() {
-        provinceList = coolWeatherDB.loadProvince();
-        if (provinceList.size() > 0) {
-            dataList.clear();
-            for (Province province : provinceList) {
-                dataList.add(province.getProvinceName());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                provinceList = coolWeatherDB.loadProvince();
+                if (provinceList.size() > 0) {
+                    dataList.clear();
+                    for (Province province : provinceList) {
+                        dataList.add(province.getProvinceName());
+                    }
+                    Message message=new Message();
+                    message.what=MESSEAGE_PROVINCE;
+                    handler.sendMessage(message);
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            queryFromServer(null, "province");
+                        }
+                    });
+                }
             }
-            adapter.notifyDataSetChanged();
-            listView.setSelection(0);
-            titleText.setText("中国—晓艺制造");
-            currentLevel=LEVEL_PROVINCE;
-        } else {
-            queryFromServer(null, "province");
-        }
+        }).start();
+
+
     }
 
     private void queryCities(){
-        cityList=coolWeatherDB.loadCities(selectedProvince.getId());
-        if(cityList.size()>0){
-            dataList.clear();
-            for (City city:cityList){
-                dataList.add(city.getCityName());
-            }
-            adapter.notifyDataSetChanged();
-            listView.setSelection(0);
-            titleText.setText(selectedProvince.getProvinceName());
-            currentLevel=LEVEL_CITY;
-        }else{
-            queryFromServer(selectedProvince.getProvinceCode(),"city");
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                cityList=coolWeatherDB.loadCities(selectedProvince.getId());
+                if(cityList.size()>0) {
+                    dataList.clear();
+                    for (City city : cityList) {
+                        dataList.add(city.getCityName());
+                    }
+                    Message message=new Message();
+                    message.what=MESSEAGE_CITY;
+                    handler.sendMessage(message);
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            queryFromServer(selectedProvince.getProvinceCode(),"city");
+                        }
+                    });
 
+                }
+            }
+        }).start();
     }
 
-    private void queryCounties(){
-        countyList=coolWeatherDB.loadCounties(selectedCity.getId());
-        if(countyList.size()>0){
-            dataList.clear();
-            for (County county:countyList){
-                dataList.add(county.getCountyName());
-            }
-            adapter.notifyDataSetChanged();
-            listView.setSelection(0);
-            titleText.setText(selectedCity.getCityName());
-            currentLevel=LEVEL_COUNTY;
-        }else{
-            queryFromServer(selectedCity.getCityCode(),"county");
-        }
+    private void queryCounties() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                countyList = coolWeatherDB.loadCounties(selectedCity.getId());
+                if (countyList.size() > 0) {
+                    dataList.clear();
+                    for (County county : countyList) {
+                        dataList.add(county.getCountyName());
+                    }
+                    Message message = new Message();
+                    message.what = MESSEAGE_COUNTY;
+                    handler.sendMessage(message);
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            queryFromServer(selectedCity.getCityCode(),"county");
+                        }
+                    });
 
+                }
+            }
+        }).start();
     }
 
     private void  queryFromServer(final String code,final  String type) {
@@ -140,6 +202,7 @@ public class ChooseAreaActivity extends Activity {
                 }
                 if (result) {
                     runOnUiThread(new Runnable() {
+
                         @Override
                         public void run() {
                             closeProgressDialog();
@@ -161,7 +224,7 @@ public class ChooseAreaActivity extends Activity {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        Toast.makeText(ChooseAreaActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChooseAreaActivityTest.this, "加载失败", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
