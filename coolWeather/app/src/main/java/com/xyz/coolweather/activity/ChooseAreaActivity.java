@@ -28,16 +28,16 @@ import java.util.List;
  * Created by yesgxy520 on 6/1/2016.
  */
 public class ChooseAreaActivity extends Activity {
-    public static final int LEVEL_PROVINCE=0;
-    public static final int LEVEL_CITY=1;
-    public static final int LEVEL_COUNTY=2;
+    public static final int LEVEL_PROVINCE = 0;
+    public static final int LEVEL_CITY = 1;
+    public static final int LEVEL_COUNTY = 2;
 
     private ProgressDialog progressDialog;
     private TextView titleText;
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private CoolWeatherDB coolWeatherDB;
-    private List<String> dataList= new ArrayList<String>();
+    private List<String> dataList = new ArrayList<String>();
 
     private List<Province> provinceList;
     private List<City> cityList;
@@ -46,22 +46,22 @@ public class ChooseAreaActivity extends Activity {
     private City selectedCity;
     private int currentLevel;
 
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.choose_area);
-        listView=(ListView) findViewById(R.id.list_view);
-        titleText=(TextView) findViewById(R.id.title_text);
-        adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,dataList);
+        listView = (ListView) findViewById(R.id.list_view);
+        titleText = (TextView) findViewById(R.id.title_text);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
-        coolWeatherDB=CoolWeatherDB.getInstance(this);
+        coolWeatherDB = CoolWeatherDB.getInstance(this);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
-                if(currentLevel==LEVEL_PROVINCE){
-                    selectedProvince=provinceList.get(index);
+                if (currentLevel == LEVEL_PROVINCE) {
+                    selectedProvince = provinceList.get(index);
                     queryCities();
-                }else if(currentLevel==LEVEL_CITY) {
+                } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(index);
                     queryCounties();
                 }
@@ -85,41 +85,41 @@ public class ChooseAreaActivity extends Activity {
         }
     }
 
-    private void queryCities(){
-        cityList=coolWeatherDB.loadCities(selectedProvince.getId());
-        if(cityList.size()>0){
+    private void queryCities() {
+        cityList = coolWeatherDB.loadCities(selectedProvince.getId());
+        if (cityList.size() > 0) {
             dataList.clear();
-            for (City city:cityList){
+            for (City city : cityList) {
                 dataList.add(city.getCityName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             titleText.setText(selectedProvince.getProvinceName());
-            currentLevel=LEVEL_CITY;
-        }else{
-            queryFromServer(selectedProvince.getProvinceCode(),"city");
+            currentLevel = LEVEL_CITY;
+        } else {
+            queryFromServer(selectedProvince.getProvinceCode(), "city");
         }
 
     }
 
-    private void queryCounties(){
-        countyList=coolWeatherDB.loadCounties(selectedCity.getId());
-        if(countyList.size()>0){
+    private void queryCounties() {
+        countyList = coolWeatherDB.loadCounties(selectedCity.getId());
+        if (countyList.size() > 0) {
             dataList.clear();
-            for (County county:countyList){
+            for (County county : countyList) {
                 dataList.add(county.getCountyName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             titleText.setText(selectedCity.getCityName());
-            currentLevel=LEVEL_COUNTY;
-        }else{
-            queryFromServer(selectedCity.getCityCode(),"county");
+            currentLevel = LEVEL_COUNTY;
+        } else {
+            queryFromServer(selectedCity.getCityCode(), "county");
         }
 
     }
 
-    private void  queryFromServer(final String code,final  String type) {
+    private void queryFromServer(final String code, final String type) {
         String address;
         if (!TextUtils.isEmpty(code)) {
             address = "http://www.weather.com.cn/data/list3/city" + code + ".xml";
@@ -153,7 +153,7 @@ public class ChooseAreaActivity extends Activity {
                         }
                     });
                 }
-                if (result){
+                if (result) {
                     closeProgressDialog();
                 }
             }
@@ -170,32 +170,30 @@ public class ChooseAreaActivity extends Activity {
         });
     }
 
-    private void showProgressDialog(){
-        if(progressDialog==null){
-            progressDialog=new ProgressDialog(this);
+    private void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("正在加载...");
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();
     }
 
-    private void closeProgressDialog(){
-        if(progressDialog!=null){
+    private void closeProgressDialog() {
+        if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
 
-    public void onBackPressed(){
-        if(currentLevel==LEVEL_COUNTY){
+    public void onBackPressed() {
+        if (currentLevel == LEVEL_COUNTY) {
             queryCities();
-        }else if(currentLevel==LEVEL_CITY){
+        } else if (currentLevel == LEVEL_CITY) {
             queryProvince();
-        }else{
+        } else {
             finish();
         }
     }
-
-
 
 
 }
