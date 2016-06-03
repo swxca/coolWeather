@@ -80,6 +80,7 @@ public class ChooseAreaActivity extends Activity {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             titleText.setText("中国—晓艺制造");
+            currentLevel=LEVEL_PROVINCE;
         } else {
             queryFromServer(null, "province");
         }
@@ -141,7 +142,7 @@ public class ChooseAreaActivity extends Activity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
+                            closeProgressDialog();
                             if ("province".equals(type)) {
                                 queryProvince();
                                 ;
