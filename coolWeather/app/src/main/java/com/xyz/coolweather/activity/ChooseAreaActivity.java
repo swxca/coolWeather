@@ -154,6 +154,9 @@ public class ChooseAreaActivity extends Activity {
                         }
                     });
                 }
+                if (result){
+                    closeProgressDialog();
+                }
             }
 
             public void onError(Exception e) {
