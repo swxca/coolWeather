@@ -52,13 +52,17 @@ public class Utility {
         if(!TextUtils.isEmpty(response)){
             String[] allCounties=response.split(",");
             if(allCounties!=null && allCounties.length>0){
+                int i=1;
                 for(String c:allCounties){
-                    String[] array=c.split("\\|");
-                    County county=new County();
-                    county.setCountyCode(array[0]);
-                    county.setCountyName(array[1]);
-                    county.setCityId(cityId);
-                    coolWeatherDB.saveCountry(county);
+                    if(i!=1){
+                        String[] array=c.split("\\|");
+                        County county=new County();
+                        county.setCountyCode(array[0]);
+                        county.setCountyName(array[1]);
+                        county.setCityId(cityId);
+                        coolWeatherDB.saveCountry(county);
+                    }
+                    i++;
                 }
                 return true;
             }
