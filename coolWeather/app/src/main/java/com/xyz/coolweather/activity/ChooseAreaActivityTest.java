@@ -221,7 +221,7 @@ public class ChooseAreaActivityTest extends Activity {
                             closeProgressDialog();
                             if ("province".equals(type)) {
                                 queryProvince();
-                                ;
+
                             } else if ("city".equals(type)) {
                                 queryCities();
                             } else if ("county".equals(type)) {
