@@ -117,4 +117,6 @@
             android:text="详细信息"
             android:textSize="40sp"/>
     </LinearLayout>
+
+
 </LinearLayout>
